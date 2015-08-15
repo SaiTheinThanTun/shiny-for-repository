@@ -57,6 +57,7 @@ rdt$Type <- factor(rdt$Type)
 #rdt <- rdt[rdt$Source %in% c("WHO/NMCP","BHS"),] #Switch for subsetting only "WHO/NMCP" & "BHS"
 
 #####End of data cleaning
+write.csv(rdt,"rdt.csv")
 #q1_2_table.R
 library(reshape2)
 library(zoo)
