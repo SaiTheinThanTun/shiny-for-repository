@@ -21,7 +21,7 @@
 #13. Plot8: Stacked Outcome plot per Township
 #14. Plot9: Percentage Stacked Outcome plot per Township
 
-setwd("C:/Users/Tom/Dropbox/1. MAEMOD/QGIS/2014 MARC Data")
+setwd("~/")
 
 #q1_1_cleaning
 #Setting up name vectors for Outcome & Type categories
@@ -50,7 +50,7 @@ rdt <- rdt[rdt$Tsp_Code %in% marc_p[-1],]
 rdt <- rdt[rdt$Outcome %in% c(pf,npf,neg),] #removing unknown outcomes
 rdt <- rdt[rdt$Mth!="",] #removing records with no month information
 rdt <- rdt[!is.na(rdt$Mth),] #removing recodes with NA
-rdt <- rdt[rdt$Yr=="2014",] #subsetting for 2013
+#rdt <- rdt[rdt$Yr=="2014",] #subsetting for 2013
 rdt <- rdt[rdt$Type %in% type2include,]
 
 rdt$Mth[rdt$Mth=="April"] <- "Apr"#This will be removed when Wynn has cleaned the month

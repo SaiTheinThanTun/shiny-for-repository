@@ -1,4 +1,4 @@
-setwd("C:/Users/Tom/Dropbox/1. MAEMOD/QGIS/2012-14 Data")
+setwd("~/")
 rdt <- read.csv("Q1_ALL_16-7-2015.csv")
 
 
@@ -55,6 +55,8 @@ levels(rdt$Source)[levels(rdt$Source)=="WHO"] <- "WHO/NMCP"
 levels(rdt$Source)[levels(rdt$Source)=="NMCP"] <- "BHS"
 rdt$Type <- factor(rdt$Type)
 #rdt <- rdt[rdt$Source %in% c("WHO/NMCP","BHS"),] #Switch for subsetting only "WHO/NMCP" & "BHS"
+
+#####End of data cleaning
 #q1_2_table.R
 library(reshape2)
 library(zoo)
