@@ -43,7 +43,7 @@ ui <- shinyUI(fluidPage(
              sidebarLayout(
                sidebarPanel(
                  checkboxGroupInput(inputId = "year_oc", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
-                 radioButtons(inputId = "type_oc", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
+                 #radioButtons(inputId = "type_oc", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
                  radioButtons(inputId = "perc", label="Percentage: ", choices= c("Yes"="y","No"="n"), selected="No", inline=T)
                ),
                mainPanel(plotOutput(outputId = "graph_oc"))
@@ -54,7 +54,7 @@ ui <- shinyUI(fluidPage(
                sidebarPanel(
                  selectInput("ocsr", "State/Region",choices= levels(uni_ts[,2]), selected="KACHIN"),
                  checkboxGroupInput(inputId = "year_ocsr", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
-                 radioButtons(inputId = "type_ocsr", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
+                 #radioButtons(inputId = "type_ocsr", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
                  radioButtons(inputId = "perc", label="Percentage: ", choices= c("Yes"="y","No"="n"), selected="No", inline=T)
                ),
                mainPanel(plotOutput(outputId = "graph_ocsr"))
@@ -65,7 +65,7 @@ ui <- shinyUI(fluidPage(
                sidebarPanel(
                  selectInput("octsp", "Township",choices= levels(uni_ts[,3]), selected="BAGO"),
                  checkboxGroupInput(inputId = "year_octsp", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
-                 radioButtons(inputId = "type_octsp", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
+                 #radioButtons(inputId = "type_octsp", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
                  radioButtons(inputId = "perc", label="Percentage: ", choices= c("Yes"="y","No"="n"), selected="No", inline=T)
                ),
                mainPanel(plotOutput(outputId = "graph_octsp"))
@@ -161,6 +161,35 @@ server <- function(input, output) {
     lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
     legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
     grid()
+  })
+  
+  output$graph_oc <- renderPlot({
+    #outcome plot for whole country
+    rdt <- rdt[rdt$Yr %in% input$year_oc,]
+      
+    combined <- dcast(rdt, Yr+Mth ~ Outcome, sum, na.rm=TRUE, value.var="Number") #To graph testing per month graphs
+    combined[,1] <- as.yearmon(paste(combined$Yr,combined$Mth), "%Y %b")
+    combined <- combined[,-2]
+    YearMonth <- combined$Yr
+    
+    if(input$perc == "n")
+    {
+      #Stacked
+      tcomb <- t(combined)
+      colnames(tcomb) <- tcomb[1,]
+      tcomb <- tcomb[-1,]
+      barplot(tcomb, col=c("cornflowerblue","orange","coral1"), border="white", main=paste("Malaria Outcomes per Month\n MARC region ",paste(input$year_oc,collapse=", ")), ylab="No. of Malaria Outcomes")
+      legend("topleft",legend=c("Negative","Non-Pf","Pf+Pmix"),fill=c("cornflowerblue","orange","coral1"), horiz=TRUE)
+    }
+    if(input$perc=="y")
+    {
+      #Percentage Stacked Outcome plot per month
+      tcomb_prop <- t(prop.table(as.matrix(combined[,2:4]),1))
+      colnames(tcomb_prop) <- as.character(YearMonth)
+      barplot(tcomb_prop, col=c("cornflowerblue","orange","coral1"), border="white", main=paste("Percentage of Malaria Outcomes per Month\n MARC region ", paste(input$year_oc,collapse=", ")), ylab="Percentage of Malaria Outcomes per Month")
+      legend("bottomright",legend=c("Negative","Non-Pf","Pf+Pmix"),fill=c("cornflowerblue","orange","coral1"))
+    }
+    
   })
 }
 
