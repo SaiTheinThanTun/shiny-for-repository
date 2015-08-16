@@ -39,7 +39,38 @@ ui <- shinyUI(fluidPage(
              )
     ),
     "Outcomes",
-    tabPanel("Whole Country"),
+    tabPanel("Whole country",
+             sidebarLayout(
+               sidebarPanel(
+                 checkboxGroupInput(inputId = "year_oc", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
+                 radioButtons(inputId = "type_oc", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
+                 radioButtons(inputId = "perc", label="Percentage: ", choices= c("Yes"="y","No"="n"), selected="No", inline=T)
+               ),
+               mainPanel(plotOutput(outputId = "graph_oc"))
+             )
+    ),
+    tabPanel("State/Region",
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("ocsr", "State/Region",choices= levels(uni_ts[,2]), selected="KACHIN"),
+                 checkboxGroupInput(inputId = "year_ocsr", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
+                 radioButtons(inputId = "type_ocsr", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
+                 radioButtons(inputId = "perc", label="Percentage: ", choices= c("Yes"="y","No"="n"), selected="No", inline=T)
+               ),
+               mainPanel(plotOutput(outputId = "graph_ocsr"))
+             )
+    ),
+    tabPanel("Township",
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("octsp", "Township",choices= levels(uni_ts[,3]), selected="BAGO"),
+                 checkboxGroupInput(inputId = "year_octsp", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
+                 radioButtons(inputId = "type_octsp", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T),
+                 radioButtons(inputId = "perc", label="Percentage: ", choices= c("Yes"="y","No"="n"), selected="No", inline=T)
+               ),
+               mainPanel(plotOutput(outputId = "graph_octsp"))
+             )
+             ),
     widths = c(2,8)
     )
 )
