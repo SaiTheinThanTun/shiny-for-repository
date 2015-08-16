@@ -13,6 +13,7 @@ ui <- shinyUI(fluidPage(
                  radioButtons(inputId = "type", label = "Type: ", choices = c("CHW"= "chw","HF"="hf", "All"="all"), selected="All", inline=T)
                ),
                mainPanel(plotOutput(outputId = "graph"))
+             )
              ),
     tabPanel("State/Region",
              sidebarLayout(
@@ -26,7 +27,7 @@ ui <- shinyUI(fluidPage(
             )         
     )
 )
-))
+)
 
 server <- function(input, output) {
   rdt <- read.csv("rdt.csv")
