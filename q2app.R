@@ -95,75 +95,67 @@ server <- function(input, output) {
       med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
       uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
-      
-      ######
-      combined <- dcast(rdt, Yr+Mth ~ Outcome, sum, na.rm=TRUE, value.var="Number") #To graph testing per month graphs
-      
-      combined$yrmth <- as.yearmon(paste(combined$Yr,combined$Mth), "%Y %b")
-      y_limits <- c(min(c(min(combined$`Non-Pf`),min(combined$Pf))),max(c(max(combined$`Non-Pf`),max(combined$Pf)))) #c(min(combined$`Non-Pf`),max(combined$Pf))
-      #Plotting
-      plot(combined$Pf ~ combined$yrmth, type="l", col="coral1",ylim=y_limits, main=paste("Malaria incidence (",typep,")\nMARC region ",paste(input$year, collapse = ", "),sep=""), xlab="Months", ylab="No. of Malaria Cases",lwd=3)
-      lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
-      legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
-      grid()}
+      if(input$size == "10")
+      {
+        uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,10,20,30,40,50,250), labels=c("<=10","11-20","21-30","31-40","41-50",">50"))
+        barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in MARC area ",paste(input$year,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
+        
+      }
+      if(input$size == "2")
+      {
+        uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
+        barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in MARC area ",paste(input$year,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
+      }
+
+      }
   })
   
   output$graph_sr <- renderPlot({
     if(input$psw == "mocru711"){
       #graph by state/region
-      rdt <- rdt[rdt$State_Region %in% input$sr,]
-      rdt <- rdt[rdt$Yr %in% input$year_sr,]
-      if(input$type_sr=="chw"){
-        rdt <- rdt[rdt$Expr1=="CHW"|rdt$Expr1=="Village",]
-        typep <- "Community Health Worker"
-      }
-      if(input$type_sr=="hf"){
-        rdt <- rdt[rdt$Expr1=="HF",]
-        typep <- "Health Facility"
-      }
-      if(input$type_sr=="all") {
-        typep <- "Health facility and CHW"
-      }
+      m_q2 <- m_q2[m_q2$MaxOfState..Division %in% input$sr,]
+      m_q2 <- m_q2[m_q2$Year %in% input$year_sr,]
       
+      uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
+      med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
+      uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
-      combined <- dcast(rdt, Yr+Mth ~ Outcome, sum, na.rm=TRUE, value.var="Number") #To graph testing per month graphs
-      
-      combined$yrmth <- as.yearmon(paste(combined$Yr,combined$Mth), "%Y %b")
-      y_limits <- c(min(c(min(combined$`Non-Pf`),min(combined$Pf))),max(c(max(combined$`Non-Pf`),max(combined$Pf))))
-      #Plotting
-      plot(combined$Pf ~ combined$yrmth, type="l", col="coral1",ylim=y_limits, main=paste("Malaria incidence (",typep,")\n", input$sr," ",paste(input$year_sr, collapse = ", "),sep=""), xlab="Months", ylab="No. of Malaria Cases",lwd=3)
-      lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
-      legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
-      grid()}
+      if(input$size == "10")
+      {
+        uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,10,20,30,40,50,250), labels=c("<=10","11-20","21-30","31-40","41-50",">50"))
+        barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_sr,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
+        
+      }
+      if(input$size == "2")
+      {
+        uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
+        barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_sr,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
+      }
+      }
   })
   
   output$graph_tsp <- renderPlot({
     if(input$psw == "mocru711"){
       #graph by township
-      rdt <- rdt[rdt$Township %in% input$tsp,]
-      rdt <- rdt[rdt$Yr %in% input$year_tsp,]
-      if(input$type_tsp=="chw"){
-        rdt <- rdt[rdt$Expr1=="CHW"|rdt$Expr1=="Village",]
-        typep <- "Community Health Worker"
-      }
-      if(input$type_tsp=="hf"){
-        rdt <- rdt[rdt$Expr1=="HF",]
-        typep <- "Health Facility"
-      }
-      if(input$type_tsp=="all") {
-        typep <- "Health facility and CHW"
-      }
+      m_q2 <- m_q2[m_q2$MaxOfTownship %in% input$tsp,]
+      m_q2 <- m_q2[m_q2$Year %in% input$year_tsp,]
       
+      uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
+      med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
+      uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
-      combined <- dcast(rdt, Yr+Mth ~ Outcome, sum, na.rm=TRUE, value.var="Number") #To graph testing per month graphs
-      
-      combined$yrmth <- as.yearmon(paste(combined$Yr,combined$Mth), "%Y %b")
-      y_limits <- c(min(c(min(combined$`Non-Pf`),min(combined$Pf))),max(c(max(combined$`Non-Pf`),max(combined$Pf))))
-      #Plotting
-      plot(combined$Pf ~ combined$yrmth, type="l", col="coral1",ylim=y_limits, main=paste("Malaria incidence (",typep,")\n", input$tsp," ",paste(input$year_tsp, collapse = ", "),sep=""), xlab="Months", ylab="No. of Malaria Cases",lwd=3)
-      lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
-      legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
-      grid()}
+      if(input$size == "10")
+      {
+        uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,10,20,30,40,50,250), labels=c("<=10","11-20","21-30","31-40","41-50",">50"))
+        barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_tsp,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
+        
+      }
+      if(input$size == "2")
+      {
+        uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
+        barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_tsp,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
+      }
+      }
   })
   
   output$graph_oc <- renderPlot({

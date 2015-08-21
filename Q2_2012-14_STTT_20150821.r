@@ -46,12 +46,17 @@ q2$Month <- toupper(q2$Month) #Changing the months into ALLCAPS
 q2$Month <- factor(q2$Month, c("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"))
 q2 <- q2[!is.na(q2$Month),]
 q2$MaxOfState..Division <- toupper(q2$MaxOfState..Division)
+q2$MaxOfTownship <- toupper(q2$MaxOfTownship)
 
 library(reshape2)
 
 m_q2 <- melt(q2, names(q2)[-9]) #To place "CountOfOutcome" as value
 m_q2 <- m_q2[m_q2$value!=0,]
 m_q2 <- m_q2[!is.na(m_q2$value),] #to remove 3 NA's in 20150525 data query
+
+###for shiny app
+write.csv(m_q2,"m_q2.csv",row.names = F)
+
 #uniq_villages <- dcast(q2, Volunteer.Villages+TS_Pcode+Source ~ Outcome, mean, na.rm=TRUE, value.var="CountOfOutcome")
 uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
 med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
