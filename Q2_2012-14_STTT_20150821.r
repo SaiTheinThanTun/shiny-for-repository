@@ -16,7 +16,7 @@ setwd("C:/WorkingDirectoryName") #The name and path can be anywhere in your comp
 
 library(reshape2)
 
-setwd("C:/Users/Tom/Dropbox/1. MAEMOD/QGIS/2014 MARC Data")
+setwd("C:/Users/Tom/Dropbox/1. MAEMOD/20. Myanmar Malaria Data Repository/2012-14 Data")
 
 q2 <- read.csv("Q2.csv")
 
@@ -24,7 +24,7 @@ q2$Month[q2$Month=="April"] <- "Apr" #remove after being cleaned
 q2$Month[q2$Month=="July"] <- "Jul"
 
 #Subsetting for 2014 MARC, #and outcomes
-q2 <- q2[q2$Year=="2014",]
+q2 <- q2[q2$Year %in% c("2014","2013","2012"),]
 marc_p <- readLines("MARC PCodes.csv")
 q2 <- q2[q2$TS_Pcode %in% marc_p[-1],]
 q2 <- q2[q2$Volunteer.Villages!="",]
@@ -44,8 +44,8 @@ q2 <- q2[,-9] #dropping the outcome categories
 #Standardizing
 q2$Month <- toupper(q2$Month) #Changing the months into ALLCAPS
 q2$Month <- factor(q2$Month, c("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"))
+q2 <- q2[!is.na(q2$Month),]
 q2$MaxOfState..Division <- toupper(q2$MaxOfState..Division)
-
 
 library(reshape2)
 
@@ -56,6 +56,11 @@ m_q2 <- m_q2[!is.na(m_q2$value),] #to remove 3 NA's in 20150525 data query
 uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
 med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
 mean_rdt <- mean(uniq_villages$CountOfOutcome) #8.28854
+
+uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
+
+#write.csv(uniq_villages_time2,"CHWovertime.csv")
+
 
 #1. Plot1: CHW histogram for average RDTs: Normal
 uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,10,20,30,40,50,250), labels=c("<=10","11-20","21-30","31-40","41-50",">50"))
@@ -97,4 +102,10 @@ chwtst_tsp_ip <- dcast(uniq_villages, TS_Pcode+MaxOfTownship ~ Source, sum, valu
 chwtst_tsp_ip[,3:13] <- round(chwtst_tsp_ip[,3:13], digits=0)
 write.csv(chwtst_tsp_ip, paste("CHW_test_tsp_IP_", Sys.Date(),".csv",sep=""))
 
+#9. Table3: Number of CHW over time
+chw_time <- dcast(uniq_villages_ym, Year+Month ~ TS_Pcode, length, value.var="TS_Pcode")
+#chw_time["NA",]<-NULL
+#chw_time <- chw_time[-37,]
+chw_time$total <- rowSums(chw_time[,3:52])
+write.csv(chw_time, paste("CHW_time_", Sys.Date(),".csv",sep=""))
 
