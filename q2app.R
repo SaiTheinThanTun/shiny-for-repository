@@ -31,7 +31,7 @@ ui <- shinyUI(fluidPage(
                sidebarPanel(
                  selectInput("tsp", "Township",choices= levels(uni_ts[,3]), selected="BAGO"),
                  checkboxGroupInput(inputId = "year_tsp", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
-                 radioButtons(inputId = "size_sr", label = "Size of each bar: ", choices = c("10"= "10","base2"="2"), selected="10", inline=T)
+                 radioButtons(inputId = "size_tsp", label = "Size of each bar: ", choices = c("10"= "10","base2"="2"), selected="10", inline=T)
                ),
                mainPanel(plotOutput(outputId = "graph_tsp"))
              )
@@ -120,13 +120,13 @@ server <- function(input, output) {
       med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
       uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
-      if(input$size == "10")
+      if(input$size_sr == "10")
       {
         uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,10,20,30,40,50,250), labels=c("<=10","11-20","21-30","31-40","41-50",">50"))
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_sr,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
         
       }
-      if(input$size == "2")
+      if(input$size_sr == "2")
       {
         uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_sr,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
@@ -144,13 +144,13 @@ server <- function(input, output) {
       med_rdt <- median(uniq_villages$CountOfOutcome) #4.75
       uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
-      if(input$size == "10")
+      if(input$size_tsp == "10")
       {
         uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,10,20,30,40,50,250), labels=c("<=10","11-20","21-30","31-40","41-50",">50"))
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_tsp,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
         
       }
-      if(input$size == "2")
+      if(input$size_tsp == "2")
       {
         uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_tsp,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
