@@ -71,14 +71,6 @@ ui <- shinyUI(fluidPage(
                mainPanel(plotOutput(outputId = "graph_octsp"))
              )
              ),
-    tabPanel("Password",
-             sidebarLayout(
-               sidebarPanel(
-                 passwordInput("psw", "Enter Password:")
-               ),
-              mainPanel ()  
-             )
-    ),
     widths = c(2,8)
     )
 )
@@ -89,7 +81,6 @@ server <- function(input, output) {
   rdt$Mth <- factor(rdt$Mth, c("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"))
   
   output$graph <- renderPlot({
-    if(input$psw == "mocru711"){
     #subsetting by 2 reactives
     rdt <- rdt[rdt$Yr %in% input$year,]
     if(input$type=="chw"){
@@ -113,11 +104,10 @@ server <- function(input, output) {
     plot(combined$Pf ~ combined$yrmth, type="l", col="coral1",ylim=y_limits, main=paste("Malaria incidence (",typep,")\nMARC region ",paste(input$year, collapse = ", "),sep=""), xlab="Months", ylab="No. of Malaria Cases",lwd=3)
     lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
     legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
-    grid()}
+    grid()
   })
   
   output$graph_sr <- renderPlot({
-    if(input$psw == "mocru711"){
     #graph by state/region
     rdt <- rdt[rdt$State_Region %in% input$sr,]
     rdt <- rdt[rdt$Yr %in% input$year_sr,]
@@ -142,11 +132,10 @@ server <- function(input, output) {
     plot(combined$Pf ~ combined$yrmth, type="l", col="coral1",ylim=y_limits, main=paste("Malaria incidence (",typep,")\n", input$sr," ",paste(input$year_sr, collapse = ", "),sep=""), xlab="Months", ylab="No. of Malaria Cases",lwd=3)
     lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
     legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
-    grid()}
+    grid()
   })
   
   output$graph_tsp <- renderPlot({
-    if(input$psw == "mocru711"){
     #graph by township
     rdt <- rdt[rdt$Township %in% input$tsp,]
     rdt <- rdt[rdt$Yr %in% input$year_tsp,]
@@ -171,11 +160,10 @@ server <- function(input, output) {
     plot(combined$Pf ~ combined$yrmth, type="l", col="coral1",ylim=y_limits, main=paste("Malaria incidence (",typep,")\n", input$tsp," ",paste(input$year_tsp, collapse = ", "),sep=""), xlab="Months", ylab="No. of Malaria Cases",lwd=3)
     lines(combined$`Non-Pf` ~ combined$yrmth, type="l", col="orange", lwd=3)
     legend("topright", legend=c("Pf+Pmix","Non-Pf"),lty=1, lwd=3,col=c("coral1","orange"))
-    grid()}
+    grid()
   })
   
   output$graph_oc <- renderPlot({
-    if(input$psw == "mocru711"){
     #outcome plot for whole country
     rdt <- rdt[rdt$Yr %in% input$year_oc,]
       
@@ -201,11 +189,9 @@ server <- function(input, output) {
       barplot(tcomb_prop, col=c("cornflowerblue","orange","coral1"), border="white", main=paste("Percentage of Malaria Outcomes per Month\n MARC region ", paste(input$year_oc,collapse=", ")), ylab="Percentage of Malaria Outcomes per Month")
       legend("bottomright",legend=c("Negative","Non-Pf","Pf+Pmix"),fill=c("cornflowerblue","orange","coral1"))
     }
-    }
-  })
+})
   
   output$graph_ocsr <- renderPlot({
-    if(input$psw == "mocru711"){
     #outcome plot by state/region
     rdt <- rdt[rdt$State_Region %in% input$ocsr,]
     rdt <- rdt[rdt$Yr %in% input$year_ocsr,]
@@ -232,11 +218,9 @@ server <- function(input, output) {
       barplot(tcomb_prop, col=c("cornflowerblue","orange","coral1"), border="white", main=paste("Percentage of Malaria Outcomes per Month\n",input$ocsr, paste(input$year_ocsr,collapse=", ")), ylab="Percentage of Malaria Outcomes per Month")
       legend("bottomright",legend=c("Negative","Non-Pf","Pf+Pmix"),fill=c("cornflowerblue","orange","coral1"))
     }
-    }
   })
   
   output$graph_octsp <- renderPlot({
-    if(input$psw == "mocru711"){
     #outcome plot by state/region
     rdt <- rdt[rdt$Township %in% input$octsp,]
     rdt <- rdt[rdt$Yr %in% input$year_octsp,]
@@ -262,7 +246,6 @@ server <- function(input, output) {
       colnames(tcomb_prop) <- as.character(YearMonth)
       barplot(tcomb_prop, col=c("cornflowerblue","orange","coral1"), border="white", main=paste("Percentage of Malaria Outcomes per Month\n",input$octsp, paste(input$year_octsp,collapse=", ")), ylab="Percentage of Malaria Outcomes per Month")
       legend("bottomright",legend=c("Negative","Non-Pf","Pf+Pmix"),fill=c("cornflowerblue","orange","coral1"))
-    }
     }
   })
 }

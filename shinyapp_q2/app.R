@@ -55,14 +55,6 @@ ui <- shinyUI(fluidPage(
                mainPanel(plotOutput(outputId = "graph_bpip"))
              )
     ),
-    tabPanel("Password",
-             sidebarLayout(
-               sidebarPanel(
-                 passwordInput("psw", "Enter Password:")
-               ),
-               mainPanel ()  
-             )
-    ),
     widths = c(2,8)
   )
 )
@@ -73,7 +65,6 @@ server <- function(input, output) {
   
   
   output$graph <- renderPlot({
-    if(input$psw == "mocru711"){
       #subsetting by 2 reactives
       m_q2 <- m_q2[m_q2$Year %in% input$year,]
       
@@ -93,11 +84,9 @@ server <- function(input, output) {
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in MARC area ",paste(input$year,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
       }
 
-      }
   })
   
   output$graph_sr <- renderPlot({
-    if(input$psw == "mocru711"){
       #graph by state/region
       m_q2 <- m_q2[m_q2$MaxOfState..Division %in% input$sr,]
       m_q2 <- m_q2[m_q2$Year %in% input$year_sr,]
@@ -117,11 +106,9 @@ server <- function(input, output) {
         uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_sr,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
       }
-      }
   })
   
   output$graph_tsp <- renderPlot({
-    if(input$psw == "mocru711"){
       #graph by township
       m_q2 <- m_q2[m_q2$MaxOfTownship %in% input$tsp,]
       m_q2 <- m_q2[m_q2$Year %in% input$year_tsp,]
@@ -141,11 +128,9 @@ server <- function(input, output) {
         uniq_villages$f <- cut(uniq_villages$CountOfOutcome, c(0,2^(0:6)[-1],250), labels=c("<=2","3-4","5-8","9-16","17-32","33-64",">64"))
         barplot(table(uniq_villages$f), main=paste("Average malaria testing rates of \nCommunity Health Workers per month in ",paste(input$sr),", ",paste(input$year_tsp,collapse=", ")," \n(median=",round(med_rdt,1),")",sep=""), xlab= "No. of malaria tests", ylab= "No. of Community Health Workers")
       }
-      }
   })
   
   output$graph_bpsr <- renderPlot({
-    if(input$psw == "mocru711"){
       #outcome plot by state/region
       m_q2 <- m_q2[m_q2$Year %in% input$year_bpsr,]
       
@@ -153,18 +138,15 @@ server <- function(input, output) {
       uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
       boxplot(CountOfOutcome ~ MaxOfState..Division,uniq_villages, xlab="States/Regions", ylab="Malaria tests", main=paste("Malaria testing rates \n across States and Regions \n MARC area ",paste(input$year_bpsr,collapse=", ")), outline=as.logical(input$out_bpsr), cex.names=.8) 
-    }
   })
   
   output$graph_bpip <- renderPlot({
-    if(input$psw == "mocru711"){
       m_q2 <- m_q2[m_q2$Year %in% input$year_bpip,]
       
       uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
       uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
       boxplot(CountOfOutcome ~ Source,uniq_villages, outline=as.logical(input$out_bpip), xlab="Implementing partners", ylab="Malaria tests", main=paste("Malaria testing rates \n across Implementing Partners \n MARC area ",paste(input$year_bpip,collapse=", "))) 
-    }
   })
 }
 
