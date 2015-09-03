@@ -46,15 +46,15 @@ ui <- shinyUI(fluidPage(
                mainPanel(plotOutput(outputId = "graph_bpsr"))
              )
     ),
-    tabPanel("By Implementer",
-             sidebarLayout(
-               sidebarPanel(
-                 checkboxGroupInput(inputId = "year_bpip", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
-                 radioButtons(inputId = "out_bpip", label="Outlier: ", choices= c("Yes"="T","No"="F"), selected="F", inline=T)
-               ),
-               mainPanel(plotOutput(outputId = "graph_bpip"))
-             )
-    ),
+    #tabPanel("By Implementer",
+    #         sidebarLayout(
+    #           sidebarPanel(
+    #             checkboxGroupInput(inputId = "year_bpip", label = "Years to include: ", choices = c("2012" ,"2013","2014"), selected = "2013", inline=T),
+    #             radioButtons(inputId = "out_bpip", label="Outlier: ", choices= c("Yes"="T","No"="F"), selected="F", inline=T)
+    #           ),
+    #           mainPanel(plotOutput(outputId = "graph_bpip"))
+    #         )
+    #),
     widths = c(2,8)
   )
 )
@@ -140,14 +140,14 @@ server <- function(input, output) {
       boxplot(CountOfOutcome ~ MaxOfState..Division,uniq_villages, xlab="States/Regions", ylab="Malaria tests", main=paste("Malaria testing rates \n across States and Regions \n MARC area ",paste(input$year_bpsr,collapse=", ")), outline=as.logical(input$out_bpsr), cex.names=.8) 
   })
   
-  output$graph_bpip <- renderPlot({
-      m_q2 <- m_q2[m_q2$Year %in% input$year_bpip,]
+  #output$graph_bpip <- renderPlot({
+  #    m_q2 <- m_q2[m_q2$Year %in% input$year_bpip,]
       
-      uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
-      uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
+  #    uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
+  #    uniq_villages_ym <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source+Year+Month ~ variable, mean, na.rm=TRUE)
       
-      boxplot(CountOfOutcome ~ Source,uniq_villages, outline=as.logical(input$out_bpip), xlab="Implementing partners", ylab="Malaria tests", main=paste("Malaria testing rates \n across Implementing Partners \n MARC area ",paste(input$year_bpip,collapse=", "))) 
-  })
+  #    boxplot(CountOfOutcome ~ Source,uniq_villages, outline=as.logical(input$out_bpip), xlab="Implementing partners", ylab="Malaria tests", main=paste("Malaria testing rates \n across Implementing Partners \n MARC area ",paste(input$year_bpip,collapse=", "))) 
+  #})
 }
 
 shinyApp(ui = ui, server = server)
