@@ -57,6 +57,10 @@ m_q2 <- m_q2[!is.na(m_q2$value),] #to remove 3 NA's in 20150525 data query
 ###for shiny app
 write.csv(m_q2,"m_q2.csv",row.names = F)
 
+##for uniq township list
+A <- unique(m_q2[,c(3,5)])
+write.csv(A,"uniq_ts_q2.csv")
+
 #uniq_villages <- dcast(q2, Volunteer.Villages+TS_Pcode+Source ~ Outcome, mean, na.rm=TRUE, value.var="CountOfOutcome")
 uniq_villages <- dcast(m_q2, MaxOfState..Division+MaxOfTownship+TS_Pcode+Volunteer.Villages+Source ~ variable, mean, na.rm=TRUE)
 med_rdt <- median(uniq_villages$CountOfOutcome) #4.75

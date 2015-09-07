@@ -58,6 +58,8 @@ rdt$Type <- factor(rdt$Type)
 
 #####End of data cleaning
 write.csv(rdt,"rdt.csv")
+A <- unique(rdt[,c(4,6)])
+write.csv(A,"uniq_ts.csv")
 #q1_2_table.R
 library(reshape2)
 library(zoo)
